@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": 1757345291397,
+    "type": "income",
+    "amount": 6200,
+    "category": "salary",
+    "description": "",
+    "date": "2025-09-03",
+    "createdAt": "2025-09-08T15:28:11.397Z"
+  }
+]
