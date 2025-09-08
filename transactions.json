@@ -7,5 +7,14 @@
     "description": "",
     "date": "2025-09-03",
     "createdAt": "2025-09-08T15:28:11.397Z"
+  },
+  {
+    "id": 1757345743664,
+    "type": "expense",
+    "amount": 650,
+    "category": "food",
+    "description": "",
+    "date": "2025-09-08",
+    "createdAt": "2025-09-08T15:35:43.664Z"
   }
 ]
