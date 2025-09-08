@@ -122,6 +122,59 @@
             color: #721c24;
         }
         
+        /* 新增导出按钮样式 */
+        .export-excel-btn {
+            background-color: #38b000;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .export-excel-btn:hover {
+            background-color: #2d8c00;
+        }
+        
+        /* 新增图表容器样式 */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
+        
+        .chart-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+        
+        @media (min-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
         @media (max-width: 600px) {
             .container {
                 padding: 15px;
@@ -129,6 +182,10 @@
             
             h1 {
                 font-size: 24px;
+            }
+            
+            .chart-wrapper {
+                height: 250px;
             }
         }
     </style>
@@ -194,8 +251,29 @@
                 <!-- 交易记录将在这里动态加载 -->
             </div>
         </div>
+        
+        <!-- 新增图表区域 -->
+        <div class="charts-container">
+            <div class="chart-container">
+                <div class="chart-title">收入分类统计</div>
+                <div class="chart-wrapper">
+                    <canvas id="income-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">支出分类统计</div>
+                <div class="chart-wrapper">
+                    <canvas id="expense-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <button class="export-excel-btn" id="export-excel">导出Excel</button>
     </div>
 
+    <!-- 引入Chart.js和SheetJS库 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script>
         // 配置存储
         let config = {
@@ -206,6 +284,9 @@
         
         // 交易数据
         let transactions = [];
+        
+        // 图表实例
+        let incomeChart, expenseChart;
         
         // DOM 加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -218,10 +299,153 @@
             // 添加事件监听器
             document.getElementById('save-auth').addEventListener('click', saveConfig);
             document.getElementById('add-transaction').addEventListener('click', addTransaction);
+            document.getElementById('export-excel').addEventListener('click', exportToExcel);
+            
+            // 初始化图表
+            initCharts();
             
             // 加载交易数据
             loadTransactions();
         });
+        
+        // 初始化图表
+        function initCharts() {
+            // 收入饼图
+            const incomeCtx = document.getElementById('income-chart').getContext('2d');
+            incomeChart = new Chart(incomeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#4cc9f0',
+                            '#4895ef',
+                            '#4361ee',
+                            '#3f37c9',
+                            '#3a0ca3'
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#fff',
+                        hoverOffset: 15
+                    }]
+                },
+                options: getChartOptions('收入分布')
+            });
+            
+            // 支出饼图
+            const expenseCtx = document.getElementById('expense-chart').getContext('2d');
+            expenseChart = new Chart(expenseCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#f72585',
+                            '#b5179e',
+                            '#7209b7',
+                            '#560bad',
+                            '#480ca8'
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#fff',
+                        hoverOffset: 15
+                    }]
+                },
+                options: getChartOptions('支出分布')
+            });
+        }
+        
+        // 获取图表配置
+        function getChartOptions(title) {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ¥${value.toFixed(2)} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: title,
+                        font: {
+                            size: 14
+                        }
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                },
+                cutout: '65%'
+            };
+        }
+        
+        // 更新图表数据
+        function updateCharts() {
+            // 收入类别统计
+            const incomeCategories = {
+                'salary': { amount: 0, name: '工资' },
+                'bonus': { amount: 0, name: '奖金' },
+                'other': { amount: 0, name: '其他收入' }
+            };
+            
+            // 支出类别统计
+            const expenseCategories = {
+                'food': { amount: 0, name: '餐饮' },
+                'shopping': { amount: 0, name: '购物' },
+                'other': { amount: 0, name: '其他支出' }
+            };
+            
+            // 统计金额
+            transactions.forEach(t => {
+                if (t.type === 'income' && incomeCategories[t.category]) {
+                    incomeCategories[t.category].amount += t.amount;
+                } else if (t.type === 'expense' && expenseCategories[t.category]) {
+                    expenseCategories[t.category].amount += t.amount;
+                }
+            });
+            
+            // 过滤出有数据的收入类别
+            const validIncomeCategories = Object.entries(incomeCategories)
+                .filter(([key, value]) => value.amount > 0)
+                .map(([key, value]) => value);
+            
+            // 过滤出有数据的支出类别
+            const validExpenseCategories = Object.entries(expenseCategories)
+                .filter(([key, value]) => value.amount > 0)
+                .map(([key, value]) => value);
+            
+            // 更新收入图表
+            incomeChart.data.labels = validIncomeCategories.map(c => c.name);
+            incomeChart.data.datasets[0].data = validIncomeCategories.map(c => c.amount);
+            incomeChart.update();
+            
+            // 更新支出图表
+            expenseChart.data.labels = validExpenseCategories.map(c => c.name);
+            expenseChart.data.datasets[0].data = validExpenseCategories.map(c => c.amount);
+            expenseChart.update();
+        }
         
         // 从本地存储加载配置
         function loadConfig() {
@@ -272,11 +496,13 @@
                     const content = atob(data.content);
                     transactions = JSON.parse(content);
                     renderTransactions();
+                    updateCharts();
                     showStatus('数据加载成功', 'success');
                 } else if (response.status === 404) {
                     // 文件不存在，创建空数组
                     transactions = [];
                     renderTransactions();
+                    updateCharts();
                     showStatus('没有找到交易记录，已创建新文件', 'success');
                 } else {
                     throw new Error(`GitHub API 错误: ${response.status}`);
@@ -380,6 +606,7 @@
             
             transactions.push(transaction);
             renderTransactions();
+            updateCharts();
             
             // 重置表单
             document.getElementById('amount').value = '';
@@ -395,6 +622,7 @@
             if (confirm('确定要删除这条记录吗？')) {
                 transactions = transactions.filter(t => t.id !== id);
                 renderTransactions();
+                updateCharts();
                 await saveTransactions();
             }
         }
@@ -444,6 +672,69 @@
                 'other': '其他'
             };
             return names[category] || category;
+        }
+        
+        // 导出Excel函数
+        function exportToExcel() {
+            try {
+                // 创建工作簿
+                const wb = XLSX.utils.book_new();
+                
+                // 准备收入数据
+                const incomeData = transactions
+                    .filter(t => t.type === 'income')
+                    .map(t => ({
+                        '日期': formatDateForExport(t.date),
+                        '类型': '收入',
+                        '类别': getCategoryName(t.category),
+                        '金额': t.amount,
+                        '描述': t.description || ''
+                    }));
+                
+                // 准备支出数据
+                const expenseData = transactions
+                    .filter(t => t.type === 'expense')
+                    .map(t => ({
+                        '日期': formatDateForExport(t.date),
+                        '类型': '支出',
+                        '类别': getCategoryName(t.category),
+                        '金额': t.amount,
+                        '描述': t.description || ''
+                    }));
+                
+                // 如果有收入数据，添加收入Sheet
+                if (incomeData.length > 0) {
+                    const incomeWs = XLSX.utils.json_to_sheet(incomeData);
+                    XLSX.utils.book_append_sheet(wb, incomeWs, '收入记录');
+                }
+                
+                // 如果有支出数据，添加支出Sheet
+                if (expenseData.length > 0) {
+                    const expenseWs = XLSX.utils.json_to_sheet(expenseData);
+                    XLSX.utils.book_append_sheet(wb, expenseWs, '支出记录');
+                }
+                
+                // 如果没有数据，提示用户
+                if (incomeData.length === 0 && expenseData.length === 0) {
+                    showStatus('没有可导出的记录', 'error');
+                    return;
+                }
+                
+                // 生成Excel文件并下载
+                const dateStr = new Date().toISOString().split('T')[0];
+                XLSX.writeFile(wb, `记账记录_${dateStr}.xlsx`);
+                showStatus('Excel导出成功', 'success');
+                
+            } catch (error) {
+                console.error('导出Excel失败:', error);
+                showStatus(`导出失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 辅助函数：格式化日期为YYYY-MM-DD
+        function formatDateForExport(dateString) {
+            const date = new Date(dateString);
+            return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
         }
         
         // 显示状态消息
