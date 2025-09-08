@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日打卡</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: #4a6baf;
+            margin-bottom: 30px;
+        }
+        
+        .counter {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #4a6baf;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .counter::after {
+            content: '天';
+            font-size: 2rem;
+            position: absolute;
+            bottom: 10px;
+            margin-left: 5px;
+        }
+        
+        .btn {
+            background-color: #4a6baf;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(74, 107, 175, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            background-color: #3a5a9f;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(74, 107, 175, 0.6);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn.clicked {
+            animation: pulse 0.5s;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            animation: confetti-fall 3s ease-in-out forwards;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(500px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .day {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 0.8rem;
+        }
+        
+        .day.checked {
+            background-color: #4a6baf;
+            color: white;
+            animation: pop 0.3s ease;
+        }
+        
+        @keyframes pop {
+            0% {
+                transform: scale(0.5);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .streak {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .date {
+            color: #888;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>每日打卡</h1>
+        <div class="date" id="current-date">2025年9月8日</div>
+        <div class="counter" id="counter">0</div>
+        <div class="streak">连续打卡 <span id="streak-days">0</span> 天</div>
+        
+        <button class="btn" id="check-btn">今日打卡</button>
+        
+        <div class="calendar" id="calendar">
+            <!-- 日历将通过JavaScript动态生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 从本地存储获取打卡数据
+        let checkData = JSON.parse(localStorage.getItem('checkData')) || {
+            totalDays: 0,
+            streak: 0,
+            lastCheckDate: null,
+            checkedDates: []
+        };
+        
+        // 获取当前日期
+        const now = new Date();
+        const today = formatDate(now);
+        
+        // 更新显示的日期
+        document.getElementById('current-date').textContent = formatDisplayDate(now);
+        
+        // 初始化计数器
+        document.getElementById('counter').textContent = checkData.totalDays;
+        document.getElementById('streak-days').textContent = checkData.streak;
+        
+        // 生成日历
+        generateCalendar();
+        
+        // 打卡按钮点击事件
+        document.getElementById('check-btn').addEventListener('click', function() {
+            // 检查今天是否已经打卡
+            if (checkData.checkedDates.includes(today)) {
+                alert('今天已经打卡过了！');
+                return;
+            }
+            
+            // 添加按钮点击动画
+            this.classList.add('clicked');
+            setTimeout(() => {
+                this.classList.remove('clicked');
+            }, 500);
+            
+            // 创建彩色纸屑效果
+            createConfetti();
+            
+            // 更新打卡数据
+            checkData.totalDays++;
+            
+            // 检查是否是连续打卡
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = formatDate(yesterday);
+            
+            if (checkData.lastCheckDate === yesterdayStr || checkData.streak === 0) {
+                checkData.streak++;
+            } else {
+                checkData.streak = 1;
+            }
+            
+            checkData.lastCheckDate = today;
+            checkData.checkedDates.push(today);
+            
+            // 保存到本地存储
+            localStorage.setItem('checkData', JSON.stringify(checkData));
+            
+            // 更新显示
+            document.getElementById('counter').textContent = checkData.totalDays;
+            document.getElementById('streak-days').textContent = checkData.streak;
+            
+            // 重新生成日历以显示新的打卡标记
+            generateCalendar();
+            
+            // 显示打卡成功消息
+            alert('打卡成功！继续保持哦！');
+        });
+        
+        // 生成日历函数
+        function generateCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            calendarEl.innerHTML = '';
+            
+            // 获取当月第一天和最后一天
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            
+            // 获取当月第一天是星期几（0-6，0是星期日）
+            const firstDayOfWeek = firstDay.getDay();
+            
+            // 生成日历格子
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day';
+                calendarEl.appendChild(emptyDay);
+            }
+            
+            // 生成日期格子
+            for (let i = 1; i <= lastDay.getDate(); i++) {
+                const day = document.createElement('div');
+                day.className = 'day';
+                day.textContent = i;
+                
+                // 检查这一天是否已经打卡
+                const dateStr = `${now.getFullYear()}-${padZero(now.getMonth() + 1)}-${padZero(i)}`;
+                if (checkData.checkedDates.includes(dateStr)) {
+                    day.classList.add('checked');
+                }
+                
+                // 如果是今天，添加特殊样式
+                if (i === now.getDate()) {
+                    day.style.border = '2px solid #4a6baf';
+                }
+                
+                calendarEl.appendChild(day);
+            }
+        }
+        
+        // 创建彩色纸屑效果
+        function createConfetti() {
+            const container = document.querySelector('.container');
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                
+                // 随机颜色
+                const colors = ['#4a6baf', '#ff6b6b', '#48dbfb', '#1dd1a1', '#feca57', '#5f27cd'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.backgroundColor = randomColor;
+                
+                // 随机位置
+                const randomLeft = Math.random() * 100;
+                confetti.style.left = `${randomLeft}%`;
+                
+                // 随机大小
+                const randomSize = Math.random() * 10 + 5;
+                confetti.style.width = `${randomSize}px`;
+                confetti.style.height = `${randomSize}px`;
+                
+                // 随机延迟
+                const randomDelay = Math.random() * 2;
+                confetti.style.animationDelay = `${randomDelay}s`;
+                
+                container.appendChild(confetti);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+        
+        // 辅助函数：格式化日期为YYYY-MM-DD
+        function formatDate(date) {
+            return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())}`;
+        }
+        
+        // 辅助函数：格式化显示日期
+        function formatDisplayDate(date) {
+            const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            return `${date.getFullYear()}年 ${months[date.getMonth()]} ${date.getDate()}日 ${days[date.getDay()]}`;
+        }
+        
+        // 辅助函数：补零
+        function padZero(num) {
+            return num < 10 ? `0${num}` : num;
+        }
+    </script>
+</body>
+</html>
