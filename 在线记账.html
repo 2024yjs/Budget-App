@@ -30,77 +30,7 @@
             padding: 20px;
         }
         
-        /* 登录容器样式 */
-        .login-container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        
-        .login-container h1 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-        }
-        
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .form-group {
-            text-align: left;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        
-        .login-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .login-btn:hover {
-            background-color: var(--secondary-color);
-        }
-        
-        .status-message {
-            padding: 10px;
-            margin-top: 15px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        /* 主应用容器 - 初始隐藏 */
-        .app-container {
-            display: none;
+        .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
@@ -109,12 +39,47 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         
-        /* 主应用样式保持不变... */
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
         .auth-section {
             margin-bottom: 20px;
             padding: 15px;
             background-color: #f0f4f8;
             border-radius: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
         }
         
         .transaction-form {
@@ -140,40 +105,24 @@
             color: var(--expense-color);
         }
         
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
         .success {
             background-color: #d4edda;
             color: #155724;
         }
         
-        /* 图表容器样式 */
-        .charts-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            margin-top: 30px;
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
         }
         
-        .chart-container {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border: 1px solid #eee;
-        }
-        
-        .chart-title {
-            text-align: center;
-            margin-bottom: 15px;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-        
-        .chart-wrapper {
-            position: relative;
-            height: 300px;
-        }
-        
-        /* 导出按钮样式 */
+        /* 新增导出按钮样式 */
         .export-excel-btn {
             background-color: #38b000;
             color: white;
@@ -192,61 +141,35 @@
             background-color: #2d8c00;
         }
         
-        @media (min-width: 768px) {
-            .charts-container {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-        
         @media (max-width: 600px) {
-            .login-container {
-                padding: 20px;
-                margin: 20px auto;
+            .container {
+                padding: 15px;
             }
             
-            .chart-wrapper {
-                height: 250px;
+            h1 {
+                font-size: 24px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 登录界面 -->
-    <div class="login-container" id="login-container">
-        <h1>GitHub 记账本</h1>
-        <p>请先验证您的 GitHub 信息</p>
-        
-        <form class="login-form" id="login-form">
-            <div class="form-group">
-                <label for="login-repo-owner">GitHub 用户名</label>
-                <input type="text" id="login-repo-owner" placeholder="您的GitHub用户名" required>
-            </div>
-            <div class="form-group">
-                <label for="login-repo-name">仓库名称</label>
-                <input type="text" id="login-repo-name" placeholder="budget-app" required>
-            </div>
-            <div class="form-group">
-                <label for="login-access-token">GitHub Access Token</label>
-                <input type="password" id="login-access-token" placeholder="您的GitHub个人访问令牌" required>
-            </div>
-            <button type="submit" class="login-btn">验证并登录</button>
-        </form>
-        
-        <div id="login-status" class="status-message" style="display: none;"></div>
-    </div>
-    
-    <!-- 主应用界面 - 初始隐藏 -->
-    <div class="app-container" id="app-container">
+    <div class="container">
         <h1>GitHub 记账本</h1>
         
         <div class="auth-section">
             <div class="form-group">
-                <label>GitHub 用户名: <span id="display-repo-owner"></span></label>
+                <label for="repo-owner">GitHub 用户名</label>
+                <input type="text" id="repo-owner" placeholder="您的GitHub用户名">
             </div>
             <div class="form-group">
-                <label>仓库名称: <span id="display-repo-name"></span></label>
+                <label for="repo-name">仓库名称</label>
+                <input type="text" id="repo-name" placeholder="budget-app">
             </div>
-            <button id="logout-btn">退出登录</button>
+            <div class="form-group">
+                <label for="access-token">GitHub Access Token</label>
+                <input type="password" id="access-token" placeholder="您的GitHub个人访问令牌">
+            </div>
+            <button id="save-auth">保存设置</button>
         </div>
         
         <div class="transaction-form">
@@ -291,26 +214,11 @@
             </div>
         </div>
         
-        <div class="charts-container">
-            <div class="chart-container">
-                <div class="chart-title">收入分类统计</div>
-                <div class="chart-wrapper">
-                    <canvas id="income-chart"></canvas>
-                </div>
-            </div>
-            <div class="chart-container">
-                <div class="chart-title">支出分类统计</div>
-                <div class="chart-wrapper">
-                    <canvas id="expense-chart"></canvas>
-                </div>
-            </div>
-        </div>
-        
+        <!-- 新增导出Excel按钮 -->
         <button class="export-excel-btn" id="export-excel">导出Excel</button>
     </div>
 
-    <!-- 引入Chart.js和SheetJS库 -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 引入SheetJS库用于导出Excel -->
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
     <script>
         // 配置存储
@@ -323,226 +231,45 @@
         // 交易数据
         let transactions = [];
         
-        // 图表实例
-        let incomeChart, expenseChart;
-        
         // DOM 加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             // 设置日期默认为今天
             document.getElementById('date').valueAsDate = new Date();
             
-            // 添加登录表单事件监听
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            // 尝试从本地加载配置
+            loadConfig();
             
-            // 添加退出登录按钮事件
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
-            
-            // 检查本地是否有保存的配置
-            checkSavedConfig();
-        });
-        
-        // 检查本地是否有保存的配置
-        function checkSavedConfig() {
-            const savedConfig = localStorage.getItem('githubBudgetAppConfig');
-            if (savedConfig) {
-                config = JSON.parse(savedConfig);
-                // 尝试自动登录
-                verifyGitHubAccess();
-            }
-        }
-        
-        // 处理登录
-        async function handleLogin(e) {
-            e.preventDefault();
-            
-            // 获取输入值
-            config.repoOwner = document.getElementById('login-repo-owner').value.trim();
-            config.repoName = document.getElementById('login-repo-name').value.trim() || 'budget-app';
-            config.accessToken = document.getElementById('login-access-token').value.trim();
-            
-            // 验证 GitHub 访问权限
-            await verifyGitHubAccess();
-        }
-        
-        // 验证 GitHub 访问权限
-        async function verifyGitHubAccess() {
-            const statusElement = document.getElementById('login-status');
-            statusElement.textContent = '正在验证 GitHub 访问权限...';
-            statusElement.style.display = 'block';
-            statusElement.className = 'status-message';
-            
-            try {
-                // 测试读取仓库信息
-                const response = await fetch(
-                    `https://api.github.com/repos/${config.repoOwner}/${config.repoName}`,
-                    {
-                        headers: {
-                            'Authorization': `token ${config.accessToken}`,
-                            'Accept': 'application/vnd.github.v3+json'
-                        }
-                    }
-                );
-                
-                if (response.ok) {
-                    // 验证成功，保存配置
-                    localStorage.setItem('githubBudgetAppConfig', JSON.stringify(config));
-                    
-                    // 显示主应用界面
-                    showAppInterface();
-                    
-                    // 初始化应用
-                    initApp();
-                } else {
-                    throw new Error(`GitHub API 错误: ${response.status}`);
-                }
-            } catch (error) {
-                console.error('GitHub 验证失败:', error);
-                statusElement.textContent = `验证失败: ${error.message}`;
-                statusElement.className = 'status-message error';
-            }
-        }
-        
-        // 显示主应用界面
-        function showAppInterface() {
-            // 隐藏登录界面
-            document.getElementById('login-container').style.display = 'none';
-            
-            // 显示主应用界面
-            const appContainer = document.getElementById('app-container');
-            appContainer.style.display = 'block';
-            
-            // 显示当前登录信息
-            document.getElementById('display-repo-owner').textContent = config.repoOwner;
-            document.getElementById('display-repo-name').textContent = config.repoName;
-        }
-        
-        // 处理退出登录
-        function handleLogout() {
-            // 清除本地存储的配置
-            localStorage.removeItem('githubBudgetAppConfig');
-            
-            // 重置配置
-            config = {
-                repoOwner: '',
-                repoName: '',
-                accessToken: ''
-            };
-            
-            // 隐藏主应用界面
-            document.getElementById('app-container').style.display = 'none';
-            
-            // 显示登录界面
-            document.getElementById('login-container').style.display = 'block';
-            
-            // 重置登录表单
-            document.getElementById('login-form').reset();
-            document.getElementById('login-status').style.display = 'none';
-        }
-        
-        // 初始化应用
-        function initApp() {
-            // 初始化图表
-            initCharts();
+            // 添加事件监听器
+            document.getElementById('save-auth').addEventListener('click', saveConfig);
+            document.getElementById('add-transaction').addEventListener('click', addTransaction);
+            document.getElementById('export-excel').addEventListener('click', exportToExcel);
             
             // 加载交易数据
             loadTransactions();
-            
-            // 添加事件监听器
-            document.getElementById('add-transaction').addEventListener('click', addTransaction);
-            document.getElementById('export-excel').addEventListener('click', exportToExcel);
+        });
+        
+        // 从本地存储加载配置
+        function loadConfig() {
+            const savedConfig = localStorage.getItem('githubBudgetAppConfig');
+            if (savedConfig) {
+                config = JSON.parse(savedConfig);
+                document.getElementById('repo-owner').value = config.repoOwner || '';
+                document.getElementById('repo-name').value = config.repoName || '';
+                document.getElementById('access-token').value = config.accessToken || '';
+            }
         }
         
-        // 初始化图表
-        function initCharts() {
-            // 收入饼图
-            const incomeCtx = document.getElementById('income-chart').getContext('2d');
-            incomeChart = new Chart(incomeCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: [
-                            '#4cc9f0',
-                            '#4895ef',
-                            '#4361ee',
-                            '#3f37c9',
-                            '#3a0ca3'
-                        ],
-                        borderWidth: 1,
-                        borderColor: '#fff',
-                        hoverOffset: 15
-                    }]
-                },
-                options: getChartOptions('收入分布')
-            });
+        // 保存配置到本地存储
+        function saveConfig() {
+            config.repoOwner = document.getElementById('repo-owner').value.trim();
+            config.repoName = document.getElementById('repo-name').value.trim() || 'budget-app';
+            config.accessToken = document.getElementById('access-token').value.trim();
             
-            // 支出饼图
-            const expenseCtx = document.getElementById('expense-chart').getContext('2d');
-            expenseChart = new Chart(expenseCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: [
-                            '#f72585',
-                            '#b5179e',
-                            '#7209b7',
-                            '#560bad',
-                            '#480ca8'
-                        ],
-                        borderWidth: 1,
-                        borderColor: '#fff',
-                        hoverOffset: 15
-                    }]
-                },
-                options: getChartOptions('支出分布')
-            });
-        }
-        
-        // 获取图表配置
-        function getChartOptions(title) {
-            return {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            padding: 15,
-                            usePointStyle: true,
-                            pointStyle: 'circle',
-                            font: {
-                                size: 12
-                            }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const label = context.label || '';
-                                const value = context.raw || 0;
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = Math.round((value / total) * 100);
-                                return `${label}: ¥${value.toFixed(2)} (${percentage}%)`;
-                            }
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: title,
-                        font: {
-                            size: 14
-                        }
-                    }
-                },
-                animation: {
-                    animateScale: true,
-                    animateRotate: true
-                },
-                cutout: '65%'
-            };
+            localStorage.setItem('githubBudgetAppConfig', JSON.stringify(config));
+            showStatus('配置已保存', 'success');
+            
+            // 重新加载交易数据
+            loadTransactions();
         }
         
         // 从 GitHub 加载交易数据
@@ -570,13 +297,11 @@
                     const content = atob(data.content);
                     transactions = JSON.parse(content);
                     renderTransactions();
-                    updateCharts();
                     showStatus('数据加载成功', 'success');
                 } else if (response.status === 404) {
                     // 文件不存在，创建空数组
                     transactions = [];
                     renderTransactions();
-                    updateCharts();
                     showStatus('没有找到交易记录，已创建新文件', 'success');
                 } else {
                     throw new Error(`GitHub API 错误: ${response.status}`);
@@ -680,7 +405,6 @@
             
             transactions.push(transaction);
             renderTransactions();
-            updateCharts();
             
             // 重置表单
             document.getElementById('amount').value = '';
@@ -696,7 +420,6 @@
             if (confirm('确定要删除这条记录吗？')) {
                 transactions = transactions.filter(t => t.id !== id);
                 renderTransactions();
-                updateCharts();
                 await saveTransactions();
             }
         }
@@ -734,52 +457,6 @@
             });
             
             container.innerHTML = html;
-        }
-        
-        // 更新图表数据
-        function updateCharts() {
-            // 收入类别统计
-            const incomeCategories = {
-                'salary': { amount: 0, name: '工资' },
-                'bonus': { amount: 0, name: '奖金' },
-                'other': { amount: 0, name: '其他收入' }
-            };
-            
-            // 支出类别统计
-            const expenseCategories = {
-                'food': { amount: 0, name: '餐饮' },
-                'shopping': { amount: 0, name: '购物' },
-                'other': { amount: 0, name: '其他支出' }
-            };
-            
-            // 统计金额
-            transactions.forEach(t => {
-                if (t.type === 'income' && incomeCategories[t.category]) {
-                    incomeCategories[t.category].amount += t.amount;
-                } else if (t.type === 'expense' && expenseCategories[t.category]) {
-                    expenseCategories[t.category].amount += t.amount;
-                }
-            });
-            
-            // 过滤出有数据的收入类别
-            const validIncomeCategories = Object.entries(incomeCategories)
-                .filter(([key, value]) => value.amount > 0)
-                .map(([key, value]) => value);
-            
-            // 过滤出有数据的支出类别
-            const validExpenseCategories = Object.entries(expenseCategories)
-                .filter(([key, value]) => value.amount > 0)
-                .map(([key, value]) => value);
-            
-            // 更新收入图表
-            incomeChart.data.labels = validIncomeCategories.map(c => c.name);
-            incomeChart.data.datasets[0].data = validIncomeCategories.map(c => c.amount);
-            incomeChart.update();
-            
-            // 更新支出图表
-            expenseChart.data.labels = validExpenseCategories.map(c => c.name);
-            expenseChart.data.datasets[0].data = validExpenseCategories.map(c => c.amount);
-            expenseChart.update();
         }
         
         // 获取类别名称
