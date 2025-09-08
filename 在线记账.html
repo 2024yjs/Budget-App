@@ -30,30 +30,30 @@
             padding: 20px;
         }
         
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+        /* 登录容器样式 */
+        .login-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            color: var(--primary-color);
             text-align: center;
+        }
+        
+        .login-container h1 {
+            color: var(--primary-color);
             margin-bottom: 20px;
         }
         
-        .auth-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f0f4f8;
-            border-radius: 8px;
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         
         .form-group {
-            margin-bottom: 15px;
+            text-align: left;
         }
         
         label {
@@ -62,24 +62,59 @@
             font-weight: 500;
         }
         
-        input, select, button {
+        input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
         }
         
-        button {
+        .login-btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
+            transition: all 0.3s ease;
         }
         
-        button:hover {
+        .login-btn:hover {
             background-color: var(--secondary-color);
+        }
+        
+        .status-message {
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* 主应用容器 - 初始隐藏 */
+        .app-container {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        /* 主应用样式保持不变... */
+        .auth-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f0f4f8;
+            border-radius: 8px;
         }
         
         .transaction-form {
@@ -105,43 +140,12 @@
             color: var(--expense-color);
         }
         
-        .status-message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            text-align: center;
-        }
-        
         .success {
             background-color: #d4edda;
             color: #155724;
         }
         
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        /* 新增导出按钮样式 */
-        .export-excel-btn {
-            background-color: #38b000;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            width: 100%;
-        }
-        
-        .export-excel-btn:hover {
-            background-color: #2d8c00;
-        }
-        
-        /* 新增图表容器样式 */
+        /* 图表容器样式 */
         .charts-container {
             display: grid;
             grid-template-columns: 1fr;
@@ -169,6 +173,25 @@
             height: 300px;
         }
         
+        /* 导出按钮样式 */
+        .export-excel-btn {
+            background-color: #38b000;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .export-excel-btn:hover {
+            background-color: #2d8c00;
+        }
+        
         @media (min-width: 768px) {
             .charts-container {
                 grid-template-columns: 1fr 1fr;
@@ -176,12 +199,9 @@
         }
         
         @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-            
-            h1 {
-                font-size: 24px;
+            .login-container {
+                padding: 20px;
+                margin: 20px auto;
             }
             
             .chart-wrapper {
@@ -191,23 +211,42 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 登录界面 -->
+    <div class="login-container" id="login-container">
+        <h1>GitHub 记账本</h1>
+        <p>请先验证您的 GitHub 信息</p>
+        
+        <form class="login-form" id="login-form">
+            <div class="form-group">
+                <label for="login-repo-owner">GitHub 用户名</label>
+                <input type="text" id="login-repo-owner" placeholder="您的GitHub用户名" required>
+            </div>
+            <div class="form-group">
+                <label for="login-repo-name">仓库名称</label>
+                <input type="text" id="login-repo-name" placeholder="budget-app" required>
+            </div>
+            <div class="form-group">
+                <label for="login-access-token">GitHub Access Token</label>
+                <input type="password" id="login-access-token" placeholder="您的GitHub个人访问令牌" required>
+            </div>
+            <button type="submit" class="login-btn">验证并登录</button>
+        </form>
+        
+        <div id="login-status" class="status-message" style="display: none;"></div>
+    </div>
+    
+    <!-- 主应用界面 - 初始隐藏 -->
+    <div class="app-container" id="app-container">
         <h1>GitHub 记账本</h1>
         
         <div class="auth-section">
             <div class="form-group">
-                <label for="repo-owner">GitHub 用户名</label>
-                <input type="text" id="repo-owner" placeholder="您的GitHub用户名">
+                <label>GitHub 用户名: <span id="display-repo-owner"></span></label>
             </div>
             <div class="form-group">
-                <label for="repo-name">仓库名称</label>
-                <input type="text" id="repo-name" placeholder="budget-app">
+                <label>仓库名称: <span id="display-repo-name"></span></label>
             </div>
-            <div class="form-group">
-                <label for="access-token">GitHub Access Token</label>
-                <input type="password" id="access-token" placeholder="您的GitHub个人访问令牌">
-            </div>
-            <button id="save-auth">保存设置</button>
+            <button id="logout-btn">退出登录</button>
         </div>
         
         <div class="transaction-form">
@@ -252,7 +291,6 @@
             </div>
         </div>
         
-        <!-- 新增图表区域 -->
         <div class="charts-container">
             <div class="chart-container">
                 <div class="chart-title">收入分类统计</div>
@@ -293,20 +331,126 @@
             // 设置日期默认为今天
             document.getElementById('date').valueAsDate = new Date();
             
-            // 尝试从本地加载配置
-            loadConfig();
+            // 添加登录表单事件监听
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
             
-            // 添加事件监听器
-            document.getElementById('save-auth').addEventListener('click', saveConfig);
-            document.getElementById('add-transaction').addEventListener('click', addTransaction);
-            document.getElementById('export-excel').addEventListener('click', exportToExcel);
+            // 添加退出登录按钮事件
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
             
+            // 检查本地是否有保存的配置
+            checkSavedConfig();
+        });
+        
+        // 检查本地是否有保存的配置
+        function checkSavedConfig() {
+            const savedConfig = localStorage.getItem('githubBudgetAppConfig');
+            if (savedConfig) {
+                config = JSON.parse(savedConfig);
+                // 尝试自动登录
+                verifyGitHubAccess();
+            }
+        }
+        
+        // 处理登录
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            // 获取输入值
+            config.repoOwner = document.getElementById('login-repo-owner').value.trim();
+            config.repoName = document.getElementById('login-repo-name').value.trim() || 'budget-app';
+            config.accessToken = document.getElementById('login-access-token').value.trim();
+            
+            // 验证 GitHub 访问权限
+            await verifyGitHubAccess();
+        }
+        
+        // 验证 GitHub 访问权限
+        async function verifyGitHubAccess() {
+            const statusElement = document.getElementById('login-status');
+            statusElement.textContent = '正在验证 GitHub 访问权限...';
+            statusElement.style.display = 'block';
+            statusElement.className = 'status-message';
+            
+            try {
+                // 测试读取仓库信息
+                const response = await fetch(
+                    `https://api.github.com/repos/${config.repoOwner}/${config.repoName}`,
+                    {
+                        headers: {
+                            'Authorization': `token ${config.accessToken}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    // 验证成功，保存配置
+                    localStorage.setItem('githubBudgetAppConfig', JSON.stringify(config));
+                    
+                    // 显示主应用界面
+                    showAppInterface();
+                    
+                    // 初始化应用
+                    initApp();
+                } else {
+                    throw new Error(`GitHub API 错误: ${response.status}`);
+                }
+            } catch (error) {
+                console.error('GitHub 验证失败:', error);
+                statusElement.textContent = `验证失败: ${error.message}`;
+                statusElement.className = 'status-message error';
+            }
+        }
+        
+        // 显示主应用界面
+        function showAppInterface() {
+            // 隐藏登录界面
+            document.getElementById('login-container').style.display = 'none';
+            
+            // 显示主应用界面
+            const appContainer = document.getElementById('app-container');
+            appContainer.style.display = 'block';
+            
+            // 显示当前登录信息
+            document.getElementById('display-repo-owner').textContent = config.repoOwner;
+            document.getElementById('display-repo-name').textContent = config.repoName;
+        }
+        
+        // 处理退出登录
+        function handleLogout() {
+            // 清除本地存储的配置
+            localStorage.removeItem('githubBudgetAppConfig');
+            
+            // 重置配置
+            config = {
+                repoOwner: '',
+                repoName: '',
+                accessToken: ''
+            };
+            
+            // 隐藏主应用界面
+            document.getElementById('app-container').style.display = 'none';
+            
+            // 显示登录界面
+            document.getElementById('login-container').style.display = 'block';
+            
+            // 重置登录表单
+            document.getElementById('login-form').reset();
+            document.getElementById('login-status').style.display = 'none';
+        }
+        
+        // 初始化应用
+        function initApp() {
             // 初始化图表
             initCharts();
             
             // 加载交易数据
             loadTransactions();
-        });
+            
+            // 添加事件监听器
+            document.getElementById('add-transaction').addEventListener('click', addTransaction);
+            document.getElementById('export-excel').addEventListener('click', exportToExcel);
+        }
         
         // 初始化图表
         function initCharts() {
@@ -399,76 +543,6 @@
                 },
                 cutout: '65%'
             };
-        }
-        
-        // 更新图表数据
-        function updateCharts() {
-            // 收入类别统计
-            const incomeCategories = {
-                'salary': { amount: 0, name: '工资' },
-                'bonus': { amount: 0, name: '奖金' },
-                'other': { amount: 0, name: '其他收入' }
-            };
-            
-            // 支出类别统计
-            const expenseCategories = {
-                'food': { amount: 0, name: '餐饮' },
-                'shopping': { amount: 0, name: '购物' },
-                'other': { amount: 0, name: '其他支出' }
-            };
-            
-            // 统计金额
-            transactions.forEach(t => {
-                if (t.type === 'income' && incomeCategories[t.category]) {
-                    incomeCategories[t.category].amount += t.amount;
-                } else if (t.type === 'expense' && expenseCategories[t.category]) {
-                    expenseCategories[t.category].amount += t.amount;
-                }
-            });
-            
-            // 过滤出有数据的收入类别
-            const validIncomeCategories = Object.entries(incomeCategories)
-                .filter(([key, value]) => value.amount > 0)
-                .map(([key, value]) => value);
-            
-            // 过滤出有数据的支出类别
-            const validExpenseCategories = Object.entries(expenseCategories)
-                .filter(([key, value]) => value.amount > 0)
-                .map(([key, value]) => value);
-            
-            // 更新收入图表
-            incomeChart.data.labels = validIncomeCategories.map(c => c.name);
-            incomeChart.data.datasets[0].data = validIncomeCategories.map(c => c.amount);
-            incomeChart.update();
-            
-            // 更新支出图表
-            expenseChart.data.labels = validExpenseCategories.map(c => c.name);
-            expenseChart.data.datasets[0].data = validExpenseCategories.map(c => c.amount);
-            expenseChart.update();
-        }
-        
-        // 从本地存储加载配置
-        function loadConfig() {
-            const savedConfig = localStorage.getItem('githubBudgetAppConfig');
-            if (savedConfig) {
-                config = JSON.parse(savedConfig);
-                document.getElementById('repo-owner').value = config.repoOwner || '';
-                document.getElementById('repo-name').value = config.repoName || '';
-                document.getElementById('access-token').value = config.accessToken || '';
-            }
-        }
-        
-        // 保存配置到本地存储
-        function saveConfig() {
-            config.repoOwner = document.getElementById('repo-owner').value.trim();
-            config.repoName = document.getElementById('repo-name').value.trim() || 'budget-app';
-            config.accessToken = document.getElementById('access-token').value.trim();
-            
-            localStorage.setItem('githubBudgetAppConfig', JSON.stringify(config));
-            showStatus('配置已保存', 'success');
-            
-            // 重新加载交易数据
-            loadTransactions();
         }
         
         // 从 GitHub 加载交易数据
@@ -660,6 +734,52 @@
             });
             
             container.innerHTML = html;
+        }
+        
+        // 更新图表数据
+        function updateCharts() {
+            // 收入类别统计
+            const incomeCategories = {
+                'salary': { amount: 0, name: '工资' },
+                'bonus': { amount: 0, name: '奖金' },
+                'other': { amount: 0, name: '其他收入' }
+            };
+            
+            // 支出类别统计
+            const expenseCategories = {
+                'food': { amount: 0, name: '餐饮' },
+                'shopping': { amount: 0, name: '购物' },
+                'other': { amount: 0, name: '其他支出' }
+            };
+            
+            // 统计金额
+            transactions.forEach(t => {
+                if (t.type === 'income' && incomeCategories[t.category]) {
+                    incomeCategories[t.category].amount += t.amount;
+                } else if (t.type === 'expense' && expenseCategories[t.category]) {
+                    expenseCategories[t.category].amount += t.amount;
+                }
+            });
+            
+            // 过滤出有数据的收入类别
+            const validIncomeCategories = Object.entries(incomeCategories)
+                .filter(([key, value]) => value.amount > 0)
+                .map(([key, value]) => value);
+            
+            // 过滤出有数据的支出类别
+            const validExpenseCategories = Object.entries(expenseCategories)
+                .filter(([key, value]) => value.amount > 0)
+                .map(([key, value]) => value);
+            
+            // 更新收入图表
+            incomeChart.data.labels = validIncomeCategories.map(c => c.name);
+            incomeChart.data.datasets[0].data = validIncomeCategories.map(c => c.amount);
+            incomeChart.update();
+            
+            // 更新支出图表
+            expenseChart.data.labels = validExpenseCategories.map(c => c.name);
+            expenseChart.data.datasets[0].data = validExpenseCategories.map(c => c.amount);
+            expenseChart.update();
         }
         
         // 获取类别名称
