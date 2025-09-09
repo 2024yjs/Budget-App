@@ -43,5 +43,14 @@
     "description": "mian",
     "date": "2025-09-09",
     "createdAt": "2025-09-09T05:17:40.955Z"
+  },
+  {
+    "id": 1757395089860,
+    "type": "expense",
+    "amount": 4.5,
+    "category": "food",
+    "description": "coke",
+    "date": "2025-09-09",
+    "createdAt": "2025-09-09T05:18:09.860Z"
   }
 ]
