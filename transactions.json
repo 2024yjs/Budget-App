@@ -34,5 +34,14 @@
     "description": "mai yan",
     "date": "2025-09-08",
     "createdAt": "2025-09-08T15:54:34.412Z"
+  },
+  {
+    "id": 1757395060955,
+    "type": "expense",
+    "amount": 16,
+    "category": "food",
+    "description": "mian",
+    "date": "2025-09-09",
+    "createdAt": "2025-09-09T05:17:40.955Z"
   }
 ]
