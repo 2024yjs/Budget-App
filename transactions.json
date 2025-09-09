@@ -52,5 +52,14 @@
     "description": "coke",
     "date": "2025-09-09",
     "createdAt": "2025-09-09T05:18:09.860Z"
+  },
+  {
+    "id": 1757395290037,
+    "type": "expense",
+    "amount": 17.3,
+    "category": "food",
+    "description": "lawson",
+    "date": "2025-09-09",
+    "createdAt": "2025-09-09T05:21:30.037Z"
   }
 ]
